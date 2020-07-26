@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace TRMDataManager.Library.Internal.DataAccess
 {
-    internal class SqlDataAccess
+    internal class SqlDataAccess : IDisposable
     {
         public string GetConnectionString(string name)
         {
@@ -42,6 +42,56 @@ namespace TRMDataManager.Library.Internal.DataAccess
             }
         }
 
+        private IDbConnection _connection;
+        private IDbTransaction _transaction;
 
+        public void StartTransaction(string connectionStringName)
+        {
+            string connectionString = GetConnectionString(connectionStringName);
+
+            _connection = new SqlConnection(connectionString);
+            _connection.Open();
+
+            _transaction = _connection.BeginTransaction();
+        }
+
+        public List<T> LoadDataInTransaction<T, U>(string storedProcedure, U parameters)
+        {
+                // loading method (dapper's part) - query:
+                List<T> rows = _connection.Query<T>(storedProcedure, parameters,
+                    commandType: CommandType.StoredProcedure, transaction: _transaction).ToList();
+
+                return rows;
+        }
+
+        public void SaveDataInTransaction<T>(string storedProcedure, T parameters)
+        {
+                _connection.Execute(storedProcedure, parameters,
+                    commandType: CommandType.StoredProcedure, transaction: _transaction);
+        }
+
+        public void CommitTransaction()
+        {
+            _transaction?.Commit();
+            _connection?.Close();
+        }
+
+        public void RollbackTransaction()
+        {
+            _transaction?.Rollback();
+            _connection?.Close();
+        }
+
+        public void Dispose()
+        {
+            CommitTransaction();
+        }
+
+        // Need to have:
+        // open connect/start transaction method
+        // load using the transaction
+        // save using the transaction
+        // close connection/stop transaction method
+        // implement Dispose
     }
 }
