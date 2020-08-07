@@ -74,8 +74,6 @@ namespace TRMDesktopUI.ViewModels
             }
         }
 
-
-
         public bool CanLogIn
         {
             get
@@ -109,6 +107,5 @@ namespace TRMDesktopUI.ViewModels
                 ErrorMessage = ex.Message;
             }
         }
-
     }
 }

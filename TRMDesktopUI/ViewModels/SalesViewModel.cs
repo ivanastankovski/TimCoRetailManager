@@ -123,8 +123,6 @@ namespace TRMDesktopUI.ViewModels
             }
         }
 
-
-
         private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
 
         public BindingList<CartItemDisplayModel> Cart
@@ -179,14 +177,6 @@ namespace TRMDesktopUI.ViewModels
                 .Where(x => x.Product.IsTaxable)
                 .Sum(x => x.Product.RetailPrice * x.QuantityInCart * taxRate);
 
-            //foreach (var item in Cart)
-            //{
-            //    if (item.Product.IsTaxable)
-            //    {
-            //        taxAmount += (item.Product.RetailPrice * item.QuantityInCart * taxRate);
-            //    }
-            //}
-
             return taxAmount;
         }
 
@@ -206,7 +196,6 @@ namespace TRMDesktopUI.ViewModels
                 return total.ToString("C", new System.Globalization.CultureInfo("en-US"));
             }
         }
-
 
         public bool CanAddToCart 
         { 
@@ -320,6 +309,5 @@ namespace TRMDesktopUI.ViewModels
 
             await ResetSalesViewModel();
         }
-
     }
 }
